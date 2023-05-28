@@ -69,17 +69,15 @@ public class App {
         // Compile the two files.
         addPackageDeclaration(firstFilePath, secondFilePath);
 
-        String output_maven = compileWithMaven(firstFilePath.toString(), secondFilePath.toString());
+        String []output_maven={""};
 
-        
-        if(executeMavenCleanTestWithPath()){
+        if(compileExecuteCovarageWithMaven(output_maven)){
             String zip_ret = zipSiteFolderToJSON(Config.getzipSiteFolderJSON()).toString();
-            String ret =  "{\"out_compile:\":" + output_maven + "\"zip:\""+zip_ret+"}";
-
+            String ret =  "{\"outCompile:\":" + output_maven[0] + "\"zip:\""+zip_ret+"}";
             return ret;
         }else
         {
-            String ret =  "{\"out_compile:\":" + output_maven + "\"zip\":\"NO_ZIP\"}";
+            String ret =  "{\"out_compile:\":" + output_maven[0] + "\"zip\":\"NO_ZIP\"}";
             return ret;
         }
     
@@ -135,7 +133,7 @@ public class App {
 
 
     //esegue compilazione con maven per ritornare eventuali errori utente
-    public static String compileWithMaven(String file1Path, String file2Path) throws IOException, InterruptedException {
+    public static boolean compileExecuteCovarageWithMaven(String []ret) throws IOException, InterruptedException {
 
         ProcessBuilder processBuilder = new ProcessBuilder();
 
@@ -149,34 +147,15 @@ public class App {
         InputStream inputStream = process.getInputStream();
         byte[] buffer = new byte[inputStream.available()];
         inputStream.read(buffer);
-
+        ret[0] = new String(buffer, StandardCharsets.UTF_8);
         if (exitCode == 0) {
             System.out.println("Maven clean compile executed successfully.");
-        } else {
-            System.out.println("Error executing Maven clean compile.");
-        }
-
-        return new String(buffer, StandardCharsets.UTF_8);
- 
-    }
-
-
-    public static boolean executeMavenCleanTestWithPath() throws IOException, InterruptedException {
-        String workingDir = Config.get_pathforcompiler();
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("mvn", "clean", "test");
-        processBuilder.directory(new File(workingDir));
-    
-        Process process = processBuilder.start();
-        int exitCode = process.waitFor();
-    
-        if (exitCode == 0) {
-            System.out.println("Maven clean test executed successfully.");
             return true;
         } else {
-            System.out.println("Error executing Maven clean test.");
-            return false;   
+            System.out.println("Error executing Maven clean compile.");
+            return false;
         }
+
     }
    
 
