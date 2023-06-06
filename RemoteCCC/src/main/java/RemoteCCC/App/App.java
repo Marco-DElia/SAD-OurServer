@@ -11,9 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-
-import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +33,6 @@ import java.io.ByteArrayOutputStream;
 @RestController
 public class App {
 
-    //public static final String PROJECT_DIR = "/Users/emanuele/Desktop/SAD_COMPILE/testfile/maven-code-coverage/";
 
     public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
@@ -52,7 +48,7 @@ public class App {
      * @throws InterruptedException
      */
     @PostMapping(value = "/compile-and-codecoverage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String compileAndTest(@RequestBody RequestDTO request) throws IOException, InterruptedException {
+    private ResponseDTO compileAndTest(@RequestBody RequestDTO request) throws IOException, InterruptedException {
         
         String testingClassName   = request.getTestingClassName();
         String testingClassCode   = request.getTestingClassCode();
@@ -60,31 +56,45 @@ public class App {
         String underTestClassName = request.getUnderTestClassName();
         String underTestClassCode = request.getUnderTestClassCode();
         
-
         // Salvataggio dei due file su disco: occorre specificare il nome della classe, per la corretta compilazione
         Path firstFilePath  = saveCodeToFile(testingClassName, testingClassCode, Config.getTestingClassPath());
         Path secondFilePath = saveCodeToFile(underTestClassName, underTestClassCode, Config.getUnderTestClassPath());
 
         
-        // Compile the two files.
+        //Aggiunge la dichiarazione del package ai file java ricevuti.
         addPackageDeclaration(firstFilePath, secondFilePath);
 
+        //Output di ritorno del comando maven.
         String []output_maven={""};
+
+        ResponseDTO response = new ResponseDTO();
+
 
         if(compileExecuteCovarageWithMaven(output_maven)){
             String zip_ret = zipSiteFolderToJSON(Config.getzipSiteFolderJSON()).toString();
-            String ret =  "{\"outCompile:\":" + output_maven[0] + "\"zip:\""+zip_ret+"}";
-            return ret;
+            //String ret =  "{\"Error\":\"False\",\"outCompile:\":\""+output_maven[0]+"\"" +","+ "\"zip\":"+zip_ret+"}";
+            response.setError(false);
+            response.setoutCompile(output_maven[0]);
+            response.setZip(zip_ret);
+            
+            //eliminare i file salvati
+            deleteFile(underTestClassName, testingClassName);
+            return response;
         }else
         {
-            String ret =  "{\"out_compile:\":" + output_maven[0] + "\"zip\":\"NO_ZIP\"}";
-            return ret;
+            //String ret =  "{\"Error\":\"True\",\"out_compile:\":\""+output_maven[0]+"\"" +","+ "\"zip\":\"NO_ZIP\"}";
+            //eliminare i file salvati
+            response.setError(true);
+            response.setoutCompile(output_maven[0]);
+            response.setZip("NO_ZIP");
+            deleteFile(underTestClassName, testingClassName);
+            return response;
         }
     
     
     }
 
-    public String zipSiteFolderToJSON(String path) throws IOException {
+    private String zipSiteFolderToJSON(String path) throws IOException {
         String folderPath = Paths.get(path, "site").toString();
     
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -110,16 +120,18 @@ public class App {
         byte[] zipBytes = baos.toByteArray();
         String encodedZip = Base64.getEncoder().encodeToString(zipBytes);
     
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("filename", "site.zip");
-        jsonObject.put("zip", encodedZip);
-    
-        return jsonObject.toString();
+        return encodedZip;
     }
 
-    //FUNZIONE DI UTILITà SERVE PER AGGIUNGERE IL PACKAGE alla dichiarazione
-    public static void addPackageDeclaration(Path file1Path, Path file2Path) throws IOException {
-        String packageDeclaration = Config.get_packageDeclaretion();
+    /**
+     * Metodo per dichiarare i package all'interno dei file ".java".
+     * @param file1path Path del primo file.
+     * @param file2Path Path del secondo file.
+     * @throws IOException Se ci sono errori I/O di lettura o scrittura su file.
+     * @throws InterruptedException
+     */
+    private static void addPackageDeclaration(Path file1Path, Path file2Path) throws IOException {
+        String packageDeclaration = Config.getpackageDeclaretion();
     
         String file1Content = Files.readString(file1Path, StandardCharsets.UTF_8);
         String file2Content = Files.readString(file2Path, StandardCharsets.UTF_8);
@@ -131,14 +143,22 @@ public class App {
         Files.write(file2Path, file2Content.getBytes(StandardCharsets.UTF_8));
     }
 
+    private void deleteFile(String underTestClassName, String testingClassName)throws IOException
+    {
+        File file1 = new File(Config.getUnderTestClassPath()+underTestClassName);
+        file1.delete();
+        File file2 = new File(Config.getTestingClassPath() + testingClassName);
+        file2.delete();
+    }
+   
 
     //esegue compilazione con maven per ritornare eventuali errori utente
-    public static boolean compileExecuteCovarageWithMaven(String []ret) throws IOException, InterruptedException {
+    private static boolean compileExecuteCovarageWithMaven(String []ret) throws IOException, InterruptedException {
 
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         processBuilder.command("mvn", "clean", "compile", "test");
-        processBuilder.directory(new File(Config.get_pathforcompiler()));
+        processBuilder.directory(new File(Config.getpathCompiler()));
     
         Process process = processBuilder.start();
         int exitCode = process.waitFor();
@@ -158,7 +178,14 @@ public class App {
 
     }
    
-
+    /**
+     * Metodo per salvare un file ".java"
+     * @param nameclass Nome della classe da salvare.
+     * @param code      Codice java da salvare.
+     * @param path      Stringa che descrive il path dove slavare il file.
+     * @return Un oggetto Path che localizza il file salvato.
+     * @throws IOException Se ci sono errori I/O di lettura o scrittura su file.
+     */
     private Path saveCodeToFile(String nameclass, String code, String path) throws IOException {
 
         File tempFile = new File(path + nameclass);
@@ -170,6 +197,8 @@ public class App {
     }
    
 
+
+    //Data Transfer Object
     private static class RequestDTO {
 
         private String testingClassName;
@@ -196,6 +225,42 @@ public class App {
             return underTestClassCode;
         }     
         
+    }
+
+    private static class ResponseDTO{
+
+        private Boolean error;
+        private String outCompile;
+        private String zip;
+
+
+        public Boolean getError(){
+            return error;
+        }
+
+        public String getOutCompile(){
+            return outCompile;
+        }
+        public String getZip(){
+            return zip;
+        }
+
+        public void setError(boolean error)
+        {
+            this.error = error;
+        }
+        
+        public void setoutCompile(String outCompile)
+        {
+            this.outCompile = outCompile;
+        }
+
+        public void setZip(String zip)
+        {
+            this.zip = zip;
+        }
+
+
     }
 
 
