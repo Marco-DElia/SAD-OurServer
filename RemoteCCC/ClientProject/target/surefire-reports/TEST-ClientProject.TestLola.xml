@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ClientProject.TestLola" time="0.013" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ClientProject.TestLola" time="0.026" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="20"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IT"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/20.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire/surefirebooter1739032379702179471.jar /Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire 2023-06-06T13-48-18_122-jvmRun1 surefire111521388492488549tmp surefire_0220888090714163761tmp"/>
+    <property name="sun.java.command" value="/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire/surefirebooter15650329901833207636.jar /Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire 2023-06-06T13-59-13_578-jvmRun1 surefire4170257002603387010tmp surefire_011518570561312713828tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/test-classes:/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/classes:/Users/emanuele/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.3.1/junit-jupiter-engine-5.3.1.jar:/Users/emanuele/.m2/repository/org/apiguardian/apiguardian-api/1.0.0/apiguardian-api-1.0.0.jar:/Users/emanuele/.m2/repository/org/junit/platform/junit-platform-engine/1.3.1/junit-platform-engine-1.3.1.jar:/Users/emanuele/.m2/repository/org/junit/platform/junit-platform-commons/1.3.1/junit-platform-commons-1.3.1.jar:/Users/emanuele/.m2/repository/org/opentest4j/opentest4j/1.1.1/opentest4j-1.1.1.jar:/Users/emanuele/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.3.1/junit-jupiter-api-5.3.1.jar:"/>
@@ -29,7 +29,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire/surefirebooter1739032379702179471.jar"/>
+    <property name="surefire.real.class.path" value="/Users/emanuele/Desktop/RemoteCCC/ClientProject/target/surefire/surefirebooter15650329901833207636.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="20.0.1"/>
@@ -58,5 +58,5 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="64.0"/>
   </properties>
-  <testcase name="testDivide" classname="ClientProject.TestLola" time="0.009"/>
+  <testcase name="testDivide" classname="ClientProject.TestLola" time="0.019"/>
 </testsuite>
