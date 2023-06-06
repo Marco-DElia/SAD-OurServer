@@ -2,11 +2,12 @@ package RemoteCCC;
 
 
 public class Config {
-    final static String pathCompiler   = "ClientProject/";
+    private static String usr_path = System.getProperty("user.dir"); 
+    final static String pathCompiler   = usr_path + "/ClientProject/";
     final static String packageDeclaration  = "package ClientProject;\n";
-    final static String zipSiteFolderToJSON = "ClientProject/target/";
-    final static String testingClassPath   = "ClientProject/src/test/java/ClientProject/";
-    final static String underTestClassPath = "ClientProject/src/main/java/ClientProject/";
+    final static String zipSiteFolderToJSON = usr_path +"/ClientProject/target/";
+    final static String testingClassPath   = usr_path +"/ClientProject/src/test/java/ClientProject/";
+    final static String underTestClassPath = usr_path +"/ClientProject/src/main/java/ClientProject/";
     
 
     public static String getTestingClassPath ()   {return testingClassPath;   }
