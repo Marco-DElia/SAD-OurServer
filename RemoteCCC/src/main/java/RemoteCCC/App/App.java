@@ -17,14 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import java.io.File;
 
-
 import java.io.FileWriter;
-import java.io.ByteArrayOutputStream;
+
 
 
 
@@ -71,22 +67,20 @@ public class App {
 
 
         if(compileExecuteCovarageWithMaven(output_maven)){
-            String zip_ret = zipSiteFolderToJSON(Config.getzipSiteFolderJSON()).toString();
-            //String ret =  "{\"Error\":\"False\",\"outCompile:\":\""+output_maven[0]+"\"" +","+ "\"zip\":"+zip_ret+"}";
+            String retXmlJacoco = readFileToString(Config.getCoverageFolder());//zipSiteFolderToJSON(Config.getzipSiteFolderJSON()).toString();
             response.setError(false);
             response.setoutCompile(output_maven[0]);
-            response.setZip(zip_ret);
+            response.setCoverage(retXmlJacoco);
             
             //eliminare i file salvati
             deleteFile(underTestClassName, testingClassName);
             return response;
         }else
         {
-            //String ret =  "{\"Error\":\"True\",\"out_compile:\":\""+output_maven[0]+"\"" +","+ "\"zip\":\"NO_ZIP\"}";
-            //eliminare i file salvati
+
             response.setError(true);
             response.setoutCompile(output_maven[0]);
-            response.setZip("NO_ZIP");
+            response.setCoverage(null);
             deleteFile(underTestClassName, testingClassName);
             return response;
         }
@@ -94,34 +88,14 @@ public class App {
     
     }
 
-    private String zipSiteFolderToJSON(String path) throws IOException {
-        String folderPath = Paths.get(path, "site").toString();
-    
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream(baos);
-    
-        Path folder = Paths.get(folderPath);
-        Files.walk(folder)
-                .filter(p -> !Files.isDirectory(p))
-                .forEach(p -> {
-                    try {
-                        Path relativePath = folder.relativize(p);
-                        ZipEntry zipEntry = new ZipEntry(relativePath.toString());
-                        zos.putNextEntry(zipEntry);
-                        zos.write(Files.readAllBytes(p));
-                        zos.closeEntry();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-    
-        zos.close();
-    
-        byte[] zipBytes = baos.toByteArray();
-        String encodedZip = Base64.getEncoder().encodeToString(zipBytes);
-    
-        return encodedZip;
+
+ 
+    private static String readFileToString(String path) throws IOException {
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        String contents = new String(bytes);
+        return contents;
     }
+
 
     /**
      * Metodo per dichiarare i package all'interno dei file ".java".
@@ -231,7 +205,7 @@ public class App {
 
         private Boolean error;
         private String outCompile;
-        private String zip;
+        private String coverage;
 
 
         public Boolean getError(){
@@ -241,8 +215,8 @@ public class App {
         public String getOutCompile(){
             return outCompile;
         }
-        public String getZip(){
-            return zip;
+        public String getCoverage(){
+            return coverage;
         }
 
         public void setError(boolean error)
@@ -255,9 +229,9 @@ public class App {
             this.outCompile = outCompile;
         }
 
-        public void setZip(String zip)
+        public void setCoverage(String coverage)
         {
-            this.zip = zip;
+            this.coverage = coverage;
         }
 
 
