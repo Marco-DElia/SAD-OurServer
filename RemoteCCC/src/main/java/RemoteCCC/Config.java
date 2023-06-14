@@ -1,25 +1,20 @@
 package RemoteCCC;
 
+import java.io.File;
 
 public class Config {
     private static String usr_path = System.getProperty("user.dir"); 
+    private static String sep = File.separator;
     final static String packageDeclaration  = "package ClientProject;\n";
 
 
-    final static String pathCompiler   = usr_path + "/ClientProject/";
-    final static String testingClassPath   = usr_path +"/ClientProject/src/test/java/ClientProject/";
-    final static String underTestClassPath = usr_path +"/ClientProject/src/main/java/ClientProject/";
-    final static String coverageFolder = usr_path + "/ClientProject/target/site/jacoco/jacoco.xml";
+    final static String pathCompiler   = usr_path + sep + "ClientProject" + sep;
+    final static String testingClassPath   = usr_path + sep + "ClientProject" +sep + "src" + sep + "test" + sep + "java"+sep +"ClientProject" + sep;
+    final static String underTestClassPath = usr_path + sep + "ClientProject" +  sep + "src" +  sep + "main" +  sep + "java" +  sep + "ClientProject" + sep;
+    final static String coverageFolder = usr_path + sep + "ClientProject" + sep + "target" + sep + "site" + sep + "jacoco" + sep + "jacoco.xml" + sep;
 
-/* Sotto windows commentare i path stile "macOs/unix" e decommentare quelli windows
- * final static String pathCompiler   = usr_path + "\\ClientProject\\";
- * final static String testingClassPath   = usr_path +"\\ClientProject\\src\\test\\java\\ClientProject\\";
- * final static String underTestClassPath = usr_path +"\\ClientProject\\src\\main\\java\\ClientProject\\";
- * final static String coverageFolder = usr_path + "\\ClientProject\\target\\site\\jacoco\\jacoco.xml";
- */
-    
 
-    public static String getTestingClassPath ()   {return testingClassPath;   }
+    public static String getTestingClassPath ()   {return testingClassPath;}
     public static String getUnderTestClassPath()  {return underTestClassPath; }
 
     public static String getpathCompiler(){return pathCompiler;}
